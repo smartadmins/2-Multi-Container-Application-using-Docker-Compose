@@ -11,18 +11,13 @@ const db = mysql.createConnection({
     port: process.env.DB_PORT
 });
 
-function connectDB() {
-    db.connect((err) => {
-        if (err) {
-            console.log("Waiting for MySQL...");
-            setTimeout(connectDB, 5000);
-        } else {
-            console.log("Connected to MySQL");
-        }
-    });
-}
-
-connectDB();
+db.connect(err => {
+    if(err){
+        console.log(err);
+    }else{
+        console.log("Connected to MySQL");
+    }
+});
 
 app.get('/api', (req,res)=>{
 
