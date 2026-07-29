@@ -1,0 +1,8 @@
+{
+  "name": "docker-compose-demo",
+  "version": "1.0.0",
+  "dependencies": {
+    "express": "^4.19.2",
+    "mysql2": "^3.14.0"
+  }
+}

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>Docker Compose Demo</title>
+
+</head>
+
+<body>
+
+<h1>Docker Compose Multi-Container Application</h1>
+
+<p>Frontend : NGINX</p>
+
+<p>Backend : Node.js</p>
+
+<p>Database : MySQL</p>
+
+<button onclick="loadData()">Check Database</button>
+
+<pre id="result"></pre>
+
+<script>
+
+async function loadData(){
+
+const res = await fetch('/api');
+
+const data = await res.json();
+
+document.getElementById("result").innerHTML =
+JSON.stringify(data,null,2);
+
+}
+
+</script>
+
+</body>
+
+</html>
