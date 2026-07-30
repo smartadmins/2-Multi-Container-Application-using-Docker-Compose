@@ -33,7 +33,7 @@ services:
     networks:
       - app-network
 
-  web:
+    web:
     build: ./web
     container_name: nginx-web
     ports:
@@ -43,7 +43,7 @@ services:
     networks:
       - app-network
 
-  app:
+    app:
     build: ./app
     container_name: node-backend
     environment:
