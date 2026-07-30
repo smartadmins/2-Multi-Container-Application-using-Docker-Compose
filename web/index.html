@@ -1,42 +1,354 @@
 <!DOCTYPE html>
-
-<html>
-
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Docker Compose Demo</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(135deg,#2193b0,#6dd5ed);
+}
+
+.container{
+width:420px;
+background:white;
+padding:30px;
+border-radius:15px;
+box-shadow:0 10px 30px rgba(0,0,0,.3);
+}
+
+h2{
+text-align:center;
+margin-bottom:20px;
+color:#333;
+}
+
+input{
+width:100%;
+padding:12px;
+margin:10px 0;
+border:1px solid #ccc;
+border-radius:8px;
+font-size:15px;
+}
+
+button{
+width:100%;
+padding:12px;
+border:none;
+background:#2193b0;
+color:white;
+font-size:16px;
+border-radius:8px;
+cursor:pointer;
+margin-top:10px;
+}
+
+button:hover{
+background:#176b82;
+}
+
+.link{
+margin-top:15px;
+text-align:center;
+}
+
+.link a{
+color:#2193b0;
+cursor:pointer;
+text-decoration:none;
+font-weight:bold;
+}
+
+.dashboard{
+display:none;
+text-align:center;
+}
+
+.dashboard h1{
+color:#2193b0;
+margin-bottom:15px;
+}
+
+.dashboard p{
+margin-bottom:20px;
+font-size:18px;
+}
+
+.logout{
+background:#d9534f;
+}
+
+.logout:hover{
+background:#b52b27;
+}
+
+.success{
+color:green;
+text-align:center;
+margin-top:10px;
+}
+
+.error{
+color:red;
+text-align:center;
+margin-top:10px;
+}
+
+</style>
 
 </head>
 
 <body>
 
-<h1>Docker Compose Multi-Container Application</h1>
+<div class="container">
 
-<p>Frontend : NGINX</p>
+<!-- LOGIN -->
 
-<p>Backend : Node.js</p>
+<div id="loginPage">
 
-<p>Database : MySQL</p>
+<h2>Login</h2>
 
-<button onclick="loadData()">Check Database</button>
+<input type="text" id="loginUser" placeholder="Username">
 
-<pre id="result"></pre>
+<input type="password" id="loginPass" placeholder="Password">
+
+<button onclick="login()">Login</button>
+
+<div id="loginMsg"></div>
+
+<div class="link">
+Don't have an account?
+<a onclick="showRegister()">Create Account</a>
+</div>
+
+</div>
+
+<!-- REGISTER -->
+
+<div id="registerPage" style="display:none;">
+
+<h2>Create Account</h2>
+
+<input type="text" id="regUser" placeholder="Username">
+
+<input type="email" id="regEmail" placeholder="Email">
+
+<input type="password" id="regPass" placeholder="Password">
+
+<button onclick="register()">Register</button>
+
+<div id="registerMsg"></div>
+
+<div class="link">
+Already have an account?
+<a onclick="showLogin()">Login</a>
+</div>
+
+</div>
+
+<!-- DASHBOARD -->
+
+<div class="dashboard" id="dashboard">
+
+<h1>Welcome</h1>
+
+<p id="welcomeUser"></p>
+
+<h3>Docker Compose Multi-Container Demo</h3>
+
+<p>
+Frontend : NGINX<br>
+Backend : Node.js<br>
+Database : MySQL
+</p>
+
+<button onclick="checkBackend()">
+Check Backend API
+</button>
+
+<br><br>
+
+<pre id="apiResult"></pre>
+
+<button class="logout" onclick="logout()">
+Logout
+</button>
+
+</div>
+
+</div>
 
 <script>
 
-async function loadData(){
+function getUsers(){
 
-const res = await fetch('/api');
+return JSON.parse(localStorage.getItem("users")) || [];
 
-const data = await res.json();
+}
 
-document.getElementById("result").innerHTML =
-JSON.stringify(data,null,2);
+function saveUsers(users){
+
+localStorage.setItem("users",JSON.stringify(users));
+
+}
+
+function showRegister(){
+
+loginPage.style.display="none";
+
+registerPage.style.display="block";
+
+dashboard.style.display="none";
+
+}
+
+function showLogin(){
+
+loginPage.style.display="block";
+
+registerPage.style.display="none";
+
+dashboard.style.display="none";
+
+}
+
+function register(){
+
+let username=document.getElementById("regUser").value.trim();
+
+let email=document.getElementById("regEmail").value.trim();
+
+let password=document.getElementById("regPass").value.trim();
+
+if(username=="" || email=="" || password==""){
+
+registerMsg.innerHTML="<div class='error'>Please fill all fields</div>";
+
+return;
+
+}
+
+let users=getUsers();
+
+if(users.find(u=>u.username===username)){
+
+registerMsg.innerHTML="<div class='error'>Username already exists</div>";
+
+return;
+
+}
+
+users.push({
+
+username,
+
+email,
+
+password
+
+});
+
+saveUsers(users);
+
+registerMsg.innerHTML="<div class='success'>Registration Successful</div>";
+
+setTimeout(showLogin,1000);
+
+}
+
+function login(){
+
+let username=document.getElementById("loginUser").value.trim();
+
+let password=document.getElementById("loginPass").value.trim();
+
+let users=getUsers();
+
+let user=users.find(u=>u.username===username && u.password===password);
+
+if(!user){
+
+loginMsg.innerHTML="<div class='error'>Invalid Username or Password</div>";
+
+return;
+
+}
+
+localStorage.setItem("loggedInUser",username);
+
+showDashboard(username);
+
+}
+
+function showDashboard(username){
+
+loginPage.style.display="none";
+
+registerPage.style.display="none";
+
+dashboard.style.display="block";
+
+welcomeUser.innerHTML="Hello <b>"+username+"</b>";
+
+}
+
+function logout(){
+
+localStorage.removeItem("loggedInUser");
+
+location.reload();
+
+}
+
+window.onload=function(){
+
+let user=localStorage.getItem("loggedInUser");
+
+if(user){
+
+showDashboard(user);
+
+}
+
+}
+
+async function checkBackend(){
+
+try{
+
+const res=await fetch("/api");
+
+const data=await res.json();
+
+document.getElementById("apiResult").innerHTML=
+JSON.stringify(data,null,4);
+
+}
+catch(e){
+
+document.getElementById("apiResult").innerHTML=
+"Backend is not reachable.";
+
+}
 
 }
 
 </script>
 
 </body>
-
 </html>
