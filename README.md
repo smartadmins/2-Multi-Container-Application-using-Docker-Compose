@@ -1,5 +1,4 @@
-# TASK-2-Multi-Container-Application-using-Docker-Compose
-# 🚀 Multi-Container Application using Docker Compose
+# TASK-2 🚀 Multi-Container Application using Docker Compose
 
 > A production-style **3-Tier Microservices Application** built with **Docker Compose**, demonstrating container orchestration, networking, environment variables, persistent storage, and reverse proxy configuration.
 
